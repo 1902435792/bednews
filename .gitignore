@@ -1,0 +1,15 @@
+# 忽略克隆的文稿库（太大，用户自行克隆）
+archive/
+
+# 数据缓存
+data/cache/
+data/index/*.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# OS
+.DS_Store
+Thumbs.db
