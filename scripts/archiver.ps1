@@ -7,8 +7,10 @@ param (
 
 # 1. Define Paths
 $WorkspaceRoot = Get-Location
-$SourceScript = Join-Path $WorkspaceRoot "broadcast_script.md"
-$SourceBlueprint = Join-Path $WorkspaceRoot "analysis_blueprint.md"
+# v15.1: 从工作区 output 目录读取产物（而非当前目录或 artifact 目录）
+$OutputDir = Join-Path $WorkspaceRoot ".agent\resources\bedtime-news\output"
+$SourceScript = Join-Path $OutputDir "broadcast_script.md"
+$SourceBlueprint = Join-Path $OutputDir "analysis_blueprint.md"
 # 归档到 Obsidian Vault 目录
 $ArchiveRoot = Join-Path $WorkspaceRoot "aaa111\bedtime_news_archive"
 $VisualScript = Join-Path $WorkspaceRoot ".agent\resources\bedtime-news\scripts\generate_visual.py"
