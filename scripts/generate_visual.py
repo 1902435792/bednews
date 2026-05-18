@@ -14,8 +14,13 @@ import argparse
 import json
 import re
 import os
+import sys
 from datetime import datetime
 from pathlib import Path
+
+# Reconfigure stdout to support UTF-8 on Windows command lines (avoids emoji-related GBK crashes)
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
 
 
 def extract_argument_chain(blueprint_path: str) -> dict:
