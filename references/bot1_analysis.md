@@ -41,14 +41,19 @@
 
 ## 执行流程
 
-### 阶段1：论题提出
+### 阶段1：论题提出与核心逻辑问题确立
 - **马督工**提出初步假设和视角。
+- **核心逻辑问题转化**：将议题转化为 1-2 个直接指向因果关系或逻辑矛盾的挑战性问题（例："为什么A导致B而不是C？"、"这个制度的真实运作逻辑是什么？"）
+- **明确分析边界**：主动排除不深入讨论的枝节问题，确保核心逻辑突出。
 - **历史镜像检查 (History Look-up)**：
   - 加载 `bedtime_news_index.json`。
   - 搜索当前议题关键词（如"房地产"、"教育"）。
-  - 若发现相关历史节目（如"第140期 独山县"），**必须**将其列为对比案例。
-- **小戴**列出 5-8 项待查证的关键数据清单。
-- **静静**提出 3-4 个预设质疑。
+  - 若发现相关历史节目，**必须**将其列为对比案例。
+- **小戴**列出 5-8 项待查证的关键数据清单，按三轮结构组织：
+  - 第一轮：核心事实与数据
+  - 第二轮：找茬对比验证（不同信源间的差异）
+  - 第三轮：历史与国际参照
+- **静静**提出 3-4 个预设质疑，重点挑战逻辑前提的可靠性和结论的现实可接受性。
 
 ### 阶段2：搜索与交锋 (Mandatory Verification & Context Expansion)
 
@@ -60,13 +65,13 @@
 
 ```bash
 # 统一调度器（自动路由到合适的数据源）
-python .agent/resources/bedtime-news/scripts/data_sources/data_router.py --query "[查询词]" --type auto
+python .agent/skills/bedtime-news/scripts/data_sources/data_router.py --query "[查询词]" --type auto
 
 # 法律法规专项查询
-python .agent/resources/bedtime-news/scripts/data_sources/law_search.py --query "民法典 继承"
+python .agent/skills/bedtime-news/scripts/data_sources/law_search.py --query "民法典 继承"
 
 # 学术论文专项查询
-python .agent/resources/bedtime-news/scripts/data_sources/academic_search.py --query "death anxiety"
+python .agent/skills/bedtime-news/scripts/data_sources/academic_search.py --query "death anxiety"
 ```
 
 **数据源优先级：**
@@ -95,17 +100,17 @@ python .agent/resources/bedtime-news/scripts/data_sources/academic_search.py --q
      - **推荐脚本**（全文搜索 815+ 期完整文稿）：
        ```bash
        # 全文搜索（自动同义词扩展）
-       python .agent/resources/bedtime-news/scripts/search_archive.py "[关键词]"
+       python .agent/skills/bedtime-news/scripts/search_archive.py "[关键词]"
        
        # 仅搜索主节目
-       python .agent/resources/bedtime-news/scripts/search_archive.py "[关键词]" --type main
+       python .agent/skills/bedtime-news/scripts/search_archive.py "[关键词]" --type main
        
        # 更多结果
-       python .agent/resources/bedtime-news/scripts/search_archive.py "[关键词]" --limit 20
+       python .agent/skills/bedtime-news/scripts/search_archive.py "[关键词]" --limit 20
        ```
      - **旧脚本**（基于索引JSON，更快但覆盖有限）：
        ```bash
-       python .agent/resources/bedtime-news/scripts/search_index.py "[关键词]"
+       python .agent/skills/bedtime-news/scripts/search_index.py "[关键词]"
        ```
      - **目的**：不仅寻找同名词，还要寻找同逻辑的历史事件（如搜"P2P"或"长租公寓"来对比"背债人"）。
    - **一手硬文件 (Hard Document Search)**：
@@ -131,10 +136,18 @@ python .agent/resources/bedtime-news/scripts/data_sources/academic_search.py --q
 - **核心定义 (Core Concept)**：**必须**为议题创造一个新概念或重新定义（如："不是诈骗，是金融化"）。
 - **标题工程 (Title)**：提供 2-3 个符合 `style.md` 标准的备选标题。
 - **核心悖论**
-- **论证链条** (注明每个论据的来源是[搜索验证]、[常识]还是[理论框架])
+- **论证逻辑大纲**（三层递进结构）：
+  - 第一层：现象与直接原因（数据支撑）
+  - 第二层：历史溯源/比较参照（历史镜像支撑）
+  - 第三层：深层结构性逻辑 + "算账"（制度/经济逻辑支撑）
+  - 每个论据注明来源：[搜索验证]、[常识]、[理论框架]
 - **对静静质疑的回应**
-- **解决方案与钩子**
+- **解决方案与钩子**（增强版）：
+  - 方案必须基于前述逻辑分析，不能凭空提出
+  - 阐明每个方案的逻辑前提、预期效果和潜在障碍
+  - 参考历史/国际案例中类似方案的实施结果
 - **历史节目双链**（见下方）
+- **分析局限性说明**：坦诚说明数据获取局限、未能展开的逻辑分支
 
 ---
 

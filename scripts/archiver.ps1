@@ -7,13 +7,13 @@ param (
 
 # 1. Define Paths
 $WorkspaceRoot = Get-Location
-# v15.1: 从工作区 output 目录读取产物（而非当前目录或 artifact 目录）
-$OutputDir = Join-Path $WorkspaceRoot ".agent\resources\bedtime-news\output"
+# v15.2: 从 skills 目录读取产物（迁移后的新路径）
+$OutputDir = Join-Path $WorkspaceRoot ".agent\skills\bedtime-news\output"
 $SourceScript = Join-Path $OutputDir "broadcast_script.md"
 $SourceBlueprint = Join-Path $OutputDir "analysis_blueprint.md"
-# 归档到 Obsidian Vault 目录
-$ArchiveRoot = Join-Path $WorkspaceRoot "aaa111\bedtime_news_archive"
-$VisualScript = Join-Path $WorkspaceRoot ".agent\resources\bedtime-news\scripts\generate_visual.py"
+# 归档到用户指定的 Obsidian Vault 目录
+$ArchiveRoot = "D:\a1114\aaa111\bedtime_news_archive"
+$VisualScript = Join-Path $WorkspaceRoot ".agent\skills\bedtime-news\scripts\generate_visual.py"
 
 # 2. Sanitize Filename
 $SafeTopic = $Topic -replace '[\\/:*?"<>|]', '' -replace '\s+', '_'
@@ -59,12 +59,16 @@ if (-not $NoVisual) {
 }
 
 # 6. Create Index Entry (for Obsidian linking)
+# 原节目归档目录
+$OriginalArchive = "D:\a1114\aaa111\睡前消息归档"
+
 $IndexEntry = @"
 ---
 topic: $Topic
 category: $Category
 date: $Date
 created: $(Get-Date -Format "yyyy-MM-dd HH:mm")
+original_archive: $OriginalArchive
 ---
 
 # $Topic
@@ -75,7 +79,12 @@ created: $(Get-Date -Format "yyyy-MM-dd HH:mm")
 <!-- 请手动填写或由AI补充 -->
 
 ## 历史双链
-<!-- 相关历史节目链接 -->
+<!-- 引用原节目时使用以下格式 -->
+<!-- [[睡前消息归档/第XXX期|第XXX期：标题]] -->
+
+**原节目库路径**: ``$OriginalArchive``
+
+> 💡 在Obsidian中，使用 `[[睡前消息归档/第XXX期]]` 链接到原节目
 "@
 
 $IndexPath = Join-Path $TargetSubFolder "README.md"
@@ -84,6 +93,7 @@ Write-Host "Created Index: README.md"
 
 Write-Host ""
 Write-Host "Archiving Complete: $TargetSubFolder"
+Write-Host "Original Archive: $OriginalArchive"
 Write-Host "Files:"
 Get-ChildItem $TargetSubFolder | ForEach-Object { Write-Host "  - $($_.Name)" }
 

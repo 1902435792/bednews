@@ -17,10 +17,10 @@
 
 ```bash
 # 搜索1：直接关键词
-python .agent/resources/bedtime-news/scripts/search_index.py "[核心议题关键词]"
+python .agent/skills/bedtime-news/scripts/search_index.py "[核心议题关键词]"
 
 # 搜索2：底层逻辑/相关产业
-python .agent/resources/bedtime-news/scripts/search_index.py "[产业类型] [制度类型]"
+python .agent/skills/bedtime-news/scripts/search_index.py "[产业类型] [制度类型]"
 ```
 
 ### 多维度搜索示例
