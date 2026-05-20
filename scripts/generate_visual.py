@@ -28,35 +28,83 @@ def extract_argument_chain(blueprint_path: str) -> dict:
     with open(blueprint_path, 'r', encoding='utf-8') as f:
         content = f.read()
     
-    # 提取核心定义
+    # 1. 提取核心定义 (支持旧版 "不是...而是..."，以及新版选题基本信息和议题名称)
+    title_match = re.search(r'# 《睡前消息》分析蓝图：(.+?)(?:\n|$)', content)
+    topic_match = re.search(r'-\s+\*\*议题名称\*\*：(.+?)(?:\n|$)', content)
     core_def_match = re.search(r'\*\*不是[^，]+，而是[^。\*]+', content)
-    core_definition = core_def_match.group(0) if core_def_match else "核心定义"
     
-    # 提取论证层次
+    if topic_match:
+        core_definition = topic_match.group(1).strip()
+    elif title_match:
+        core_definition = title_match.group(1).strip()
+    elif core_def_match:
+        core_definition = core_def_match.group(0).strip()
+    else:
+        core_definition = "选题剖析"
+        
+    # 限制核心定义在 Mermaid 中展示的长度
+    if len(core_definition) > 40:
+        core_definition = core_definition[:40] + "..."
+    
+    # 2. 提取论证层次 (兼容 4-Vector 结构与旧版第X层)
     layers = []
-    layer_pattern = r'###\s*第(\w+)层[：:]\s*(.+?)(?=###|---|\Z)'
-    layer_matches = re.findall(layer_pattern, content, re.DOTALL)
+    vector_pattern = r'###\s*4\.\d+\s+(\w+).*?\n(.+?)(?=###|##|---|\Z)'
+    vector_matches = re.findall(vector_pattern, content, re.DOTALL)
     
-    for level, layer_content in layer_matches:
-        # 提取要点
-        points = re.findall(r'-\s+(.+?)(?:\[搜索验证\]|\[常识\]|\[理论框架\]|\[分析\])?(?:\n|$)', layer_content)
-        layers.append({
-            'level': level,
-            'points': [p.strip() for p in points[:3]]  # 每层最多3个要点
-        })
+    if vector_matches:
+        for vector_name, vector_content in vector_matches:
+            # 提取要点，清理 Markdown 加粗等符号
+            raw_points = re.findall(r'-\s+(.+?)(?:\n|$)', vector_content)
+            clean_points = []
+            for p in raw_points:
+                p_clean = re.sub(r'\*\*|\[.*?\]', '', p).strip()
+                if p_clean:
+                    clean_points.append(p_clean)
+            if clean_points:
+                layers.append({
+                    'level': vector_name,
+                    'points': clean_points[:3]  # 最多3个要点
+                })
+    else:
+        # 回退到旧版 "第X层" 匹配
+        layer_pattern = r'###\s*第(\w+)层[：:]\s*(.+?)(?=###|---|\Z)'
+        layer_matches = re.findall(layer_pattern, content, re.DOTALL)
+        for level, layer_content in layer_matches:
+            points = re.findall(r'-\s+(.+?)(?:\[搜索验证\]|\[常识\]|\[理论框架\]|\[分析\])?(?:\n|$)', layer_content)
+            clean_points = [re.sub(r'\*\*|\[.*?\]', '', p).strip() for p in points if p.strip()]
+            layers.append({
+                'level': level,
+                'points': clean_points[:3]
+            })
     
-    # 提取核心悖论
+    # 3. 提取核心悖论 (寻找蓝图中的批判性断定，或回退旧版)
     paradoxes = []
-    paradox_pattern = r'\*\*悖论\d+[：:]\s*(.+?)\*\*'
-    paradox_matches = re.findall(paradox_pattern, content)
-    paradoxes = paradox_matches[:3]  # 最多3个悖论
-    
-    # 提取方案
+    # 匹配加粗并且带冒号的要点主旨（通常是核心冲突）
+    bold_keys = re.findall(r'-\s+\*\*([^*]+?)\*\*：', content)
+    if bold_keys:
+        # 筛选出跟利益、避险、筛选、矛盾相关的核心切入点
+        filtered = [k.strip() for k in bold_keys if any(x in k for x in ["避险", "矛盾", "冲突", "筛选", "账本", "责任", "套利"])]
+        if filtered:
+            paradoxes = filtered[:3]
+        else:
+            paradoxes = bold_keys[:3]
+            
+    if not paradoxes:
+        # 回退到旧版
+        paradox_pattern = r'\*\*悖论\d+[：:]\s*(.+?)\*\*'
+        paradox_matches = re.findall(paradox_pattern, content)
+        paradoxes = paradox_matches[:3]
+        
+    # 4. 提取解决方案 (匹配蓝图预测或方案列表)
     solutions = []
-    solution_pattern = r'\*\*第[一二三]，(.+?)\*\*'
-    solution_matches = re.findall(solution_pattern, content)
-    solutions = solution_matches[:3]
-    
+    sol_matches = re.findall(r'\d+\.\s+\*\*([^*]+?)\*\*：', content)
+    if sol_matches:
+        solutions = [s.strip() for s in sol_matches[:3]]
+    else:
+        solution_pattern = r'\*\*第[一二三]，(.+?)\*\*'
+        solution_matches = re.findall(solution_pattern, content)
+        solutions = [s.strip() for s in solution_matches[:3]]
+        
     return {
         'core_definition': core_definition,
         'layers': layers,
