@@ -10,6 +10,11 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Local secrets
+.env
+.env.*
+config.env
+
 # OS
 .DS_Store
 Thumbs.db

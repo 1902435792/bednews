@@ -1,5 +1,22 @@
 # 搜索技巧
 
+## v21.0 检索工具补充：AnySearch + Jina Reader
+
+用于 Codex / Antigravity 执行大范围检索时的工具分工：
+
+| 环节 | 首选工具 | 作用 |
+|------|----------|------|
+| 找实时线索和候选 URL | `python scripts/anysearch.py search ...` | 快速拿到候选来源、摘要、URL |
+| 多组关键词试探 | `python scripts/anysearch.py batch_search ...` | 一次比较 3 组查询，每组 3-4 条结果即可 |
+| 读取关键原文 | `python scripts/jina_reader.py "URL" --max-chars 12000` | 将新闻、政策、报告页转成 Markdown 正文 |
+| 交叉验证 | `web_search` / `web_fetch` | AnySearch 或 Jina Reader 不足时补充 |
+
+执行原则：
+- AnySearch 摘要只用于定位线索，不能直接当作原文证据。
+- 拿到关键 URL 后，优先用 Jina Reader 或 web_fetch 读取正文，再进入论证。
+- `batch_search` 只做早期试探，查询组不要超过 3 组，避免输出过长和噪声污染判断。
+- 找茬对比必须尽量读正文。标题、摘要、搜索结果片段只能作为线索，不能替代原文措辞。
+
 ## 选题阶段搜索（用户未指定议题时）
 
 如果需要自行选择热点议题，优先使用以下策略：

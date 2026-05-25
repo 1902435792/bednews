@@ -1,5 +1,21 @@
 # 历史镜像使用指南
 
+## v21.0 外部镜像补充
+
+本地历史镜像检索优先级最高。只有在本地归档不足以形成参照时，再用外部搜索补充国际或跨地区案例：
+
+```bash
+python scripts/anysearch.py batch_search "[核心议题英文]" "[上位制度词英文] case study" "[国家] [类似问题] policy failure" --content-types news,doc,academic --zone intl --freshness year --max-results 4
+```
+
+拿到关键 URL 后必须读取正文：
+
+```bash
+python scripts/jina_reader.py "https://example.com/source" --max-chars 12000
+```
+
+外部案例只能作为“镜像参照”，不能覆盖本地往期结论；如果外部案例与本地归档冲突，必须说明制度环境、时间阶段、利益主体的差异。
+
 ## 什么是历史镜像？
 
 在《睡前消息》分析中，"历史镜像"指的是与当前议题具有**相似逻辑或结构**的历史案例。马督工经常使用这种方法来：
